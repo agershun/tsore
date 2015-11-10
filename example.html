@@ -1,0 +1,51 @@
+<html>
+	<body>
+	    <traffic-lignt></traffic-lignt>
+	    <script type="riot/tag">
+			<traffic-lignt>
+				<div id="#traffic-lignt" onclick={click}></div>
+				<style scoped>
+					#traffic-light {
+						width:100px;
+						height:100px;
+						border-radius:50%;
+						background-color:{color};
+					}
+				</style>
+				var self = this;
+				riot.mixin('tsore');
+				var trafficLight = self.store('trafficLight');
+				click(function(){
+					tsore.dispatch('green');
+				});
+				tsore.on('update',function(){
+					self.color = trafficLight.state;
+				});
+			</traffic-lignt>
+	    </script>
+		<script src="riot+compiler.js"></script>
+	    <script src="tsore.js"></script>
+	    <script>
+	    	tsore.register(
+	    		'trafficLight', 
+	    		{
+		    		red: function() {
+		    			this.state = 'red';
+		    			return 'change';
+		    		},
+		    		green: function() {
+		    			this.state = 'red';
+		    			return true;
+		    		},
+		    	},
+		    	{
+		    		state:'red';
+		    	}, 
+		    	function(action){
+		    		console.log(action+' action was dispatched');
+		    	}
+	    	);
+	    	riot.mount('*');
+	    </script>
+	</body>
+</html>
