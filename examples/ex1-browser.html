@@ -1,0 +1,31 @@
+<html>
+<body>
+	<h1>Browser example</h1>
+	<p>Please, open console to see the results</p>
+	<script src="../tsore.js"></script>
+	<script>
+	    tsore.register(
+	    	'car',
+	    	{
+		    	start:function(){
+		    		this.state = 'run';
+			    }
+			},
+		    {
+		    	state:'stop'
+		    },
+		    function(action) {
+		    	if(typeof action === 'undefined') {
+		    		console.log('init car store');
+		    	} else {
+		    		console.log('"'+action+'" action for car')
+		    	}
+		    }
+		);
+	    console.log(tsore.store('car').state);		
+	    tsore.action('start');
+	    console.log(tsore.store('car').state);
+	    	//riot.mount('*');
+    </script>
+</body>
+</html>

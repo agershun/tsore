@@ -5,6 +5,7 @@
 	    <script type="riot/tag">
 			<traffic-lignt>
 				<div class={color=='red'?"red":"green"} onclick={click}></div>
+				<a href="#" onclick={setRed}>Set Red</a>
 				<style scoped>
 					div {
 						width:100px;
@@ -19,16 +20,20 @@
 					}
 				</style>
 				var self = this;
-				this.color = tsore.store('trafficLight').getState();
+				this.mixin('tsore');
+				
+				this.store('trafficLight',function(store){
+					self.color = store.getState();
+				});
 
 				click() {
 					tsore.action('Trigger');
 				};
 
-				tsore.on('change',function(){
-					self.color = tsore.store('trafficLight').getState();
-					self.update();
-				});
+				setRed() {
+					tsore.action('SetState','red');
+				}
+
 			</traffic-lignt>
 	    </script>
 		<script src="riot+compiler.js"></script>
@@ -42,15 +47,20 @@
 			    			return state;
 			    		};
 				    	
+			    		this.on('Trigger Show Hide'); // Declare Actions
+
 				    	// Event
-				    	this.on('Trigger', function(){
-			    			state = state == 'red'?'green':'red';
+				    	this.on('SetState', function(color){
+			    			state = color;
 			    			tsore.trigger('change');				    		
 				    	});
 
-				    	// For all triggers
+				    	// Manually for all triggers
 				    	this.on(function(action){
-				    		console.log(action, state);
+				    		if(action == 'Trigger') {
+				    			state = state == 'red'?'green':'red';
+				    			tsore.trigger('change');				    		
+				    		}
 				    	});
 			    	}
 				);

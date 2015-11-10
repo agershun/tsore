@@ -28,13 +28,15 @@ var Tsore = function(store){
 			actions = name
 			name = ''+Date.now();
 		};
-		if(typeof actions == 'function' && actions instanceof tsore.Store) {
+//      console.log(typeof actions);
+		if(typeof actions == 'object' && actions instanceof tsore.Store) {
 			var store = actions;
 		} else {
 			var store = new tsore.Store(actions,defaults,controller);
 		};
 		storeMap[name] = store;
 		storeList.push(store);
+    return store;
 	};
 
 	Tsore.prototype.reset = function () {
@@ -106,13 +108,24 @@ Tsore.prototype.observable = function(el) {
    */
 
   defineProperty('on', function(events, fn) {
-    if (typeof fn != 'function')  return el;
+    if (typeof events == 'string' && typeof fn == 'undefined') {
+      fn = function(){};
+     // return el;
+    }
 
-    onEachEvent(events, function(name, pos) {
-      (callbacks[name] = callbacks[name] || []).push(fn)
-      fn.typed = pos > 0
-    });
-
+    if (typeof events == 'function') {
+      fn = events;
+      events = '*';
+    }
+//     if (events == '*') {
+//       console.log(114,this,arguments);
+// //      callbacks = {}
+//     } else {
+      onEachEvent(events, function(name, pos) {
+        (callbacks[name] = callbacks[name] || []).push(fn)
+        fn.typed = pos > 0
+      });
+//    }
     return el;
   });
 
@@ -136,7 +149,7 @@ Tsore.prototype.observable = function(el) {
       })
     }
     return el
-  })
+  });
 
   /**
    * Listen to the given space separated list of `events` and execute the `callback` at most once
@@ -151,7 +164,7 @@ Tsore.prototype.observable = function(el) {
       fn.apply(el, arguments)
     }
     return el.on(events, on)
-  })
+  });
 
   /**
    * Execute all callback functions that listen to the given space separated list of `events`
@@ -167,7 +180,11 @@ Tsore.prototype.observable = function(el) {
       args = new Array(arglen)
     for (var i = 0; i < arglen; i++) {
       args[i] = arguments[i + 1]
-    }
+    };
+
+    // Trigger * event
+    var star = Object.keys(callbacks).indexOf('*')>-1;
+    var starFn = callbacks['*'];
 
     onEachEvent(events, function(name) {
 
@@ -178,7 +195,12 @@ Tsore.prototype.observable = function(el) {
         fn.busy = 1
 
         try {
-          fn.apply(el, fn.typed ? [name].concat(args) : args)
+          if(star) {
+            starFn.forEach(function(sfn){
+              sfn.apply(el, [name].concat(args));
+            });
+          }
+          fn.apply(el, fn.typed ? [name].concat(args) : args);
         } catch (e) { /* error */}
         if (fns[i] !== fn) { i-- }
         fn.busy = 0
@@ -202,8 +224,18 @@ var tsore = new Tsore();
 
 
 Tsore.prototype.Store = function(actions, defaults, controller){
-	var self = this;
+  // Save this
+  var self = this;
 
+  // Arguments
+  if(typeof actions == 'function') {
+    controller = actions;
+    actions = {};
+    defaults = {};
+  } else if(typeof defaults == 'function') {
+    controller = defaults;
+    defaults = {};
+  }    
 	// Make it observable
 	tsore.observable(self);
 
@@ -223,7 +255,8 @@ Tsore.prototype.Store = function(actions, defaults, controller){
 
 				var args = [].slice.call(arguments);
 				if(typeof controller != 'undefined') {
-					controller.apply(self,args);
+//					console.log(226,f.append(args));
+					controller.apply(self,[f].concat(args));
 				}
 				var res = actions[f].call(self,args);
 				if(typeof res === 'string') {
@@ -246,8 +279,8 @@ Tsore.prototype.Store = function(actions, defaults, controller){
 	};
 
 	// Initially we call controller without any parameters
-	if(typeof controller != 'undefined') {
-		controller.call(self);
+	if(typeof controller == 'function') {
+		controller.apply(self);
 	}
 
 	// Return object
@@ -266,8 +299,20 @@ if(typeof riot !== 'undefined') {
 	          unsubscribe()
 	        })
 	      })
-	    },			
-		store: function(name,readOnly){
+	    },	
+
+      store: function(store,fn) {
+        var self = this;
+        tsore.on('change',function(){
+          fn.call(self,tsore.store(store));
+          self.update();
+        }); 
+        // First time call
+        fn.call(self,tsore.store(store));
+
+
+      },		
+		store1: function(name,readOnly){
 	     var store = tsore.store(name);
 
 	      if (!store) {
