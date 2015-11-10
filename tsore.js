@@ -12,15 +12,16 @@
 
 // Main object definition
 
-var Tsore = function(){
-
-	tsore.observable(this);
+var Tsore = function(store){
+	if(typeof store == 'string') {
+		return this.store(store);
+	}
 
 	var storeMap = {}, storeList = [];
 
-	this.stores = storeMap;
+//	this.stores = storeMap;
 
-	this.register = function(name,actions,defaults,controller) {
+	Tsore.prototype.register = function(name,actions,defaults,controller) {
 		if(typeof arguments[0] != 'string') {
 			controller = defaults;
 			defaults = actions;
@@ -36,7 +37,7 @@ var Tsore = function(){
 		storeList.push(store);
 	};
 
-	this.reset = function {
+	Tsore.prototype.reset = function () {
 	    storeList.forEach(function(store){
 	      store.off('*')
 	    })
@@ -55,56 +56,25 @@ var Tsore = function(){
 	//     };
 	//  });
 
-	this.dispath = function(action) {
+	Tsore.prototype.dispatch = Tsore.prototype.action = function(action) {
       var args = [].slice.call(arguments);
       storeList.forEach(function(store){
-        store[action].apply(store, args);
+//      	console.log(62,store,action,args);
+//        store.on[action].apply(store, args);
+        store.trigger.apply(store, args);
       });
 	};	
 
-	this.store = function(name) {
-		return _stores[name];
+	Tsore.prototype.store = function(name) {
+		return storeMap[name];
 	};
-
-	if(typeof riot !== 'undefined') {
-		riot.mixin('tsore',{
-		    init: function() {
-		      this.disposables = []
-		      this.on('unmount', function() {
-		        this.disposables.forEach(function(unsubscribe){
-		          unsubscribe()
-		        })
-		      })
-		    },			
-			store: function(name,readOnly){
-		     var store = storeMap[name];
-
-		      if (!store) {
-		        throw new Error("Store not found: "+ name)
-		      };
-
-		      if (readOnly !== true) {
-		        var _store = store
-
-		        store = Object.create(_store, {
-		          on: { value: _autoDispose(this, _store.on, _store.off) },
-		          one:{ value: _autoDispose(this, _store.one, _store.off) }
-		        })
-		        store.on(CHANGE_EVENT, this.update)
-		      }
-			}
-		});
-	}
-
 
 	return this;
 };
 
-var tsore = new Tsore();
-
 // This code was borrowed from Riot.js
 
-tsore.observable = function(el) {
+Tsore.prototype.observable = function(el) {
 
   /**
    * Extend the original object or create a new empty one
@@ -226,7 +196,12 @@ tsore.observable = function(el) {
 
 };
 
-var Store = tsore.Store = function(actions, defaults, controller){
+Tsore.prototype.observable(Tsore.prototype);
+
+var tsore = new Tsore();
+
+
+Tsore.prototype.Store = function(actions, defaults, controller){
 	var self = this;
 
 	// Make it observable
@@ -242,29 +217,31 @@ var Store = tsore.Store = function(actions, defaults, controller){
 	// Second - add actions
 	for(var f in actions) {
 		if(actions.hasOwnProperty(f)) {
-			self[f] = function(){
-				var self2 = this;
-				self.on(f, function() {
-					if(typeof controller != 'undefined') {
-						controller.call(self,arguments);
-					}
-					var res = actions[f].call(self2,arguments);
-					if(typeof res === 'string') {
-						tsore.trigger(res);
-					} else if(res === true) {
-						tsore.trigger('change');						
-					} else if(res instanceof Promise) {
-						res.then(function(data){
-							if(typeof res === 'string') {
-								tsore.trigger(res);
-							} else if(res === true) {
-								tsore.trigger('change');						
-							}
-						});
-					}
-				});
+//			self.on[f] = function(){
+//				var self2 = this;
+			self.on(f, function() {
 
-			};
+				var args = [].slice.call(arguments);
+				if(typeof controller != 'undefined') {
+					controller.apply(self,args);
+				}
+				var res = actions[f].call(self,args);
+				if(typeof res === 'string') {
+					tsore.trigger(res);
+				} else if(res === true) {
+					tsore.trigger('change');						
+				} else if(res instanceof Promise) {
+					res.then(function(data){
+						if(typeof res === 'string') {
+							tsore.trigger(res);
+						} else if(res === true) {
+							tsore.trigger('change');						
+						}
+					});
+				}
+			});
+
+//			};
 		}
 	};
 
@@ -277,6 +254,36 @@ var Store = tsore.Store = function(actions, defaults, controller){
 	return this;
 }
 
-
 return tsore;
 }));
+
+if(typeof riot !== 'undefined') {
+	riot.mixin('tsore',{
+	    init: function() {
+	      this.disposables = []
+	      this.on('unmount', function() {
+	        this.disposables.forEach(function(unsubscribe){
+	          unsubscribe()
+	        })
+	      })
+	    },			
+		store: function(name,readOnly){
+	     var store = tsore.store(name);
+
+	      if (!store) {
+	        throw new Error("Store not found: "+ name)
+	      };
+
+	      if (readOnly !== true) {
+	        var _store = store
+
+	        store = Object.create(_store, {
+	          on: { value: _autoDispose(this, _store.on, _store.off) },
+	          one:{ value: _autoDispose(this, _store.one, _store.off) }
+	        })
+	        store.on(CHANGE_EVENT, this.update)
+	      }
+		}
+	});
+};
+
