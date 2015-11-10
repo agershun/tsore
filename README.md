@@ -75,7 +75,7 @@ Register new store with Tsore controller:
 Functions for tsore:
 ```js
 	tsore.register(store) or register('name',store)
-	tsore.dispatch('action',parameters)
+	tsore.action('action',parameters)
 	tsore.store('name')
 	tsore.on('event',function(){})
 	tsore.one('event',function(){})
@@ -99,55 +99,39 @@ This add following functions:
     obj.one()
     obj.off()
 ```
-See [Riot.js]() documentation.
+See [Riot.js]() documentation for more detailes.
 
-# Riot.js and Tsore.js Example
+## Changes from Riot.js
 
-```html
-<html>
-	<body>
-	    <traffic-lignt></traffic-lignt>
-	    <script type="riot/tag">
-			<traffic-lignt>
-				<div id="#traffic-lignt" onclick={click}></div>
-				<style scoped>
-					#traffic-light {
-						width:100px;
-						height:100px;
-						border-radius:50%;
-						background-color:{color};
-					}
-				</style>
-				var trafficLight = tsore.store('trafficLight');
-				this.color = trafficLight.state;
-				click(function(){
-					tsore.dispatch('green');
-				});
-				tsore.on('change',function(){
-					this.color = trafficLight.state;
-				})
-			</traffic-lignt>
-	    </script>
-		<script src="riot+compiler.js"></script>
-	    <script src="tsore.js"></script>
-	    <script>
-	    	tsore.register('trafficLight',
-		    	new tsore.Store({
-		    		red: function() {
-		    			this.state = 'red';
-		    			return 'change';
-		    		},
-		    		green: function() {
-		    			this.state = 'red';
-		    			return 'change';
-		    		},
-		    	}, function(){
-		    		this.state = 'red';
-		    	});
-	    	);
-	    	riot.mount('*');
-	    </script>
-	</body>
-</html>
+Now you can define your own dispatcher function to process all events.
+
+```js
+    this.on('Action1 Action2 Action3'); // Registration of actions
+    this.on(function(action){
+    	if(action == 'Action1') {
+    		// Do Action 1
+    	} else if(action == 'Action2') {
+    		// Do Action 2
+    	} else if(action == 'Action3') {
+    		// Do Action 3
+    	}
+    })
 ```
+
+# Riot.js and Tsore.js
+
+You can use the both libraries together with Tsore mixin:
+```js
+	mixin('tsore');
+	this.store('store', updateFunction);
+```
+For example, you can link Riot element and Tsore store:
+```
+	mixin('tsore');
+	this.store('trafficLight', function(store){
+		this.color = store.getState();
+	});
+```
+This function will be called after each time the sorage fires ```change``` event.
+After the function run, Tsore will call ```this.update()``` after each call.
 
