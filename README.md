@@ -3,7 +3,7 @@
 The library is designed to realized simple Flux-like store
 interface.
 
-The code is based on [Riot.js](riotjs.org), [Loot.js](), and [RiotControl.js]() libraries.
+The code is based on [Riot.js](riotjs.org), [Loot.js](https://gist.github.com/mattmccray/53fe18e5211334c9943d), and [RiotControl.js](https://github.com/jimsparkman/RiotControl) libraries.
 
 ## Example
 
@@ -46,21 +46,35 @@ Create new Store in simple way:
 Or you can create new store with tsore.Store class constructor:
 ```js
     var store  = new tsore.Store({
+        // Here we define actions
         login: function(name,password) {
         	this.name = name;
         	this.password = password;
-    		return 'name_changed'; 
+    		return 'change'; 
     	},
     	logout: function() {
     		this.name = undefined;
-    		return 'name_changed';
+    		return 'change';
     	},
-    },{
+    },
+    // And here - functions and open default values
+    {
+        name: 'Andrey',
     	getName: function(){
     		return this.name;
     	}
     });
 ```
+You also can create store manually with constructor function:
+```js
+   tsore.register('TrafficLight', function(){
+        var state = 'red';
+        on('Trigger', function(){
+            state = state == 'red'?'green':'red';
+            tsore.trigger('change');
+        });
+   })
+
 
 Register new store with Tsore controller:
 ```js
@@ -123,7 +137,7 @@ Now you can define your own dispatcher function to process all events.
 You can use the both libraries together with Tsore mixin:
 ```js
 	mixin('tsore');
-	this.store('store', updateFunction);
+	this.store('storeName', updateFunction);
 ```
 For example, you can link Riot element and Tsore store:
 ```
@@ -132,6 +146,6 @@ For example, you can link Riot element and Tsore store:
 		this.color = store.getState();
 	});
 ```
-This function will be called after each time the sorage fires ```change``` event.
+This function will be called after each time the storage fires ```change``` event.
 After the function run, Tsore will call ```this.update()``` after each call.
 
