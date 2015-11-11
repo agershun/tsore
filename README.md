@@ -5,12 +5,19 @@ interface.
 
 The code is based on [Riot.js](riotjs.org), [Loot.js](https://gist.github.com/mattmccray/53fe18e5211334c9943d), and [RiotControl.js](https://github.com/jimsparkman/RiotControl) libraries.
 
+<blockquote>
+Tsore was a Freighter Type C belonging to the Rebel Alliance during the Galactic Civil War.
+[Source](http://starwars.wikia.com/wiki/Tsore)
+</blockquote>
+
 ## Examples
 
 Plese see the following examples:
 * [Example 1 - Traffic Light Example](example1.html)
 * [Example 2 - Manually defined dispatcher](example2.html)
 * [Example 3 - Timer Store](example3.html)
+* [Example 4 - Timer Store with action() function](example4.html)
+* [Example 5 - Two Timer Stores with different actions() ](example5.html)
 * [Example in Browser](examples/ex1-browser.html)
 * [Example in Node.js](examples/ex1-node.js)
 
@@ -191,12 +198,12 @@ Now you can define your own dispatcher function to process all events.
 You can use the both libraries together with Tsore mixin:
 ```js
 	mixin('tsore');
-	this.store('storeName', updateFunction);
+	this.attach('storeName', updateFunction);
 ```
 For example, you can link Riot element and Tsore store:
 ```
 	mixin('tsore');
-	this.store('trafficLight', function(store){
+	this.attach('trafficLight', function(store){
 		this.color = store.getState();
 	});
 ```

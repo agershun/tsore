@@ -22,7 +22,7 @@
 				var self = this;
 				this.mixin('tsore');
 				
-				this.store('trafficLight',function(store){
+				this.attach('trafficLight',function(store){
 					self.color = store.getState();
 				});
 

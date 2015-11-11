@@ -303,7 +303,7 @@ if(typeof riot !== 'undefined') {
 	      })
 	    },	
 
-      store: function(store,fn) {
+      attach: function(store,fn) {
         var self = this;
         tsore.on('change',function(){
           fn.call(self,tsore.store(store));
@@ -313,7 +313,14 @@ if(typeof riot !== 'undefined') {
         fn.call(self,tsore.store(store));
 
 
-      },		
+      },	
+    action: function(action){
+      return function(){
+        tsore.action(action);
+      }
+    },
+
+    // Not clear how to use
 		store1: function(name,readOnly){
 	     var store = tsore.store(name);
 

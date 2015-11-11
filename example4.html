@@ -6,9 +6,9 @@
 	    <script type="riot/tag">
 			<timer>
 				<div>{time} seconds</div>
-				<button onclick={start}>Start</button>
-				<button onclick={stop}>Stop</button>
-				<button onclick={reset}>Reset</button>
+				<button onclick={action('Start')}>Start</button>
+				<button onclick={action('Stop')}>Stop</button>
+				<button onclick={action('Reset')}>Reset</button>
 				<style scoped>
 					:scope {
 						font-size:40px;
@@ -20,17 +20,7 @@
 					this.time = store.time;
 				});
 
-				start() {
-					tsore.action('Start');
-				}
-				stop() {
-					tsore.action('Stop');
-				};
-				reset() {
-					tsore.action('Reset');
-				};
-
-				tsore.action('Start');
+				this.action('Start')();
 			</timer>
 	    </script>
 		<script src="riot+compiler.js"></script>

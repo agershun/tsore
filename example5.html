@@ -1,0 +1,75 @@
+<html>
+	<body>
+
+		<!-- FExample Form -->
+		<h1>2 Timers Store Demo for Tsore.js</h1>
+	    <timer></timer>
+
+	    <!-- View definition -->
+	    <script type="riot/tag">
+
+			<timer>
+				<div>Timer1: {time1} Timer2: {time2}</div>
+
+				<button onclick={action('Start')}>Start</button>
+				<button onclick={action('Stop')}>Stop</button>
+				<button onclick={action('Reset')}>Reset</button>
+				<button onclick={action('MinusFive')}>Minus 5 from Timer1</button>
+				<button onclick={action('AddTen')}>Add 10 to Timer2</button>
+				
+				<style scoped>
+					:scope {
+						font-size:40px;
+					}
+				</style>
+				this.mixin('tsore'); // Attach Tsore functions
+				
+				this.attach('timer1',function(store){  // Attach store with update function
+					this.time1 = store.time;
+				});
+
+				this.attach('timer2',function(store){
+					this.time2 = store.time;
+				});
+
+				tsore.action('Start');  // Runaction
+			</timer>
+	    </script>
+		<script src="riot+compiler.js"></script>
+	    <script src="tsore.js"></script>
+	    <script>
+
+	    	// Stores
+	    	var TimerActions = {
+				Reset: function(){
+					this.time = 0;
+					tsore.trigger('change');
+				},
+				Start: function(){
+					if(this.intervalId) clearInterval(this.intervalId);
+					this.intervalId = setInterval(function(){
+						this.time++;
+						tsore.trigger('change');
+					}.bind(this),1000);						
+				},
+				Stop: function(){
+					if(this.intervalId) clearInterval(this.intervalId);
+				}
+			};
+
+
+			tsore.register('timer1',new tsore.Store(TimerActions,{time:10}))
+			.on('MinusFive',function(){
+				this.time-=5;
+			});
+
+			tsore.register('timer2',new tsore.Store(TimerActions,{time:20}))
+			.on('AddTen',function(){
+				this.time+=10;
+			})
+
+			// Mount Riot.js HTML tags
+	    	riot.mount('*');
+	    </script>
+	</body>
+</html>
