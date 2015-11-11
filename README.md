@@ -7,8 +7,9 @@ The code is based on [Riot.js](riotjs.org), [Loot.js](https://gist.github.com/ma
 
 <blockquote>
 Tsore was a Freighter Type C belonging to the Rebel Alliance during the Galactic Civil War.
-[Source](http://starwars.wikia.com/wiki/Tsore)
 </blockquote>
+[Source](http://starwars.wikia.com/wiki/Tsore)
+
 
 ## Examples
 
@@ -21,6 +22,7 @@ Plese see the following examples:
 * [Example in Browser](examples/ex1-browser.html)
 * [Example in Node.js](examples/ex1-node.js)
 
+[ToDo demo](demo) (based in RiotControl todo demo).
 
 ## Initializing
 

@@ -1,0 +1,37 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>RiotControl Demo</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="todo.css">
+
+    <!--[if lt IE 9]>
+    <script src="js/es5-shim.js"></script>
+    <script src="js/html5-shiv.js"></script>
+    <script>html5.addElements('todoapp')</script>
+    <![endif]-->
+
+  </head>
+
+  <body>
+
+    <todoapp></todoapp>
+
+    <a href="https://github.com/agershun/tsore">View on GitHub</a>
+    <p>Based on the demo from <a href="https://github.com/jimsparkman/RiotControl">RiotControl</a></p>
+
+    <script type="riot/tag" src="todo.tag"></script>
+    <script type="riot/tag" src="todoapp.tag"></script>
+    <script src="../riot+compiler.js"></script>
+    <script src="../tsore.js"></script>
+    <script src="todostore.js"></script>
+
+    <script>
+      riot.mount('todoapp') // Kickoff the Riot app.
+    </script>
+
+  </body>
+
+</html>

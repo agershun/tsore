@@ -58,11 +58,12 @@ var Tsore = function(store){
 	//     };
 	//  });
 
-	Tsore.prototype.dispatch = Tsore.prototype.action = function(action) {
+	Tsore.prototype.dispatch = Tsore.prototype.action = function() {
       var args = [].slice.call(arguments);
       storeList.forEach(function(store){
-//      	console.log(62,store,action,args);
+//      	console.log(62,store,args[1]);
 //        store.on[action].apply(store, args);
+//console.log(66,args);
         store.trigger.apply(store, args);
       });
 	};	
@@ -195,20 +196,26 @@ Tsore.prototype.observable = function(el) {
         fn.busy = 1
 
 //        try {
+          var arr = args.slice(0);
+          arr.unshift(name);
           if(star) {
             starFn.forEach(function(sfn){
-              sfn.apply(el, [name].concat(args));
+              sfn.apply(el, arr);
             });
           }
-          fn.apply(el, fn.typed ? [name].concat(args) : args);
+          fn.apply(el, fn.typed ? arr : args);
 //        } catch (e) { /* error */}
         if (fns[i] !== fn) { i-- }
         fn.busy = 0
       }
 
-      if (callbacks.all && name != 'all')
-        el.trigger.apply(el, ['all', name].concat(args))
+        if (callbacks.all && name != 'all') {
+          var arr1 = args.slice(0);
+          arr1.unshift(name);
+          arr1.unshift('all');
 
+          el.trigger.apply(el, arr1);
+        }
     })
 
     return el
@@ -303,10 +310,16 @@ if(typeof riot !== 'undefined') {
 	      })
 	    },	
 
-      attach: function(store,fn) {
+      attach: function(event,store,fn) {
+        if(arguments.length == 2) {
+          fn = store;
+          store = event;
+          event = 'change';
+        }
         var self = this;
-        tsore.on('change',function(){
-          fn.call(self,tsore.store(store));
+        tsore.on(event,function(){
+          var args = [].slice.call(arguments);
+          fn.apply(self,[tsore.store(store)].concat(args));
           self.update();
         }); 
         // First time call
