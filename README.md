@@ -86,7 +86,7 @@ You also can create store manually with constructor function:
 Register new store with Tsore controller:
 ```js
     tsore.register(store);
-    tsore.dispatch('login','Andrey');
+    tsore.action('login','Andrey');
     console.log(store.getName);
 ```
 
@@ -119,6 +119,7 @@ This add following functions:
     obj.on()
     obj.one()
     obj.off()
+    obj.trigger()
 ```
 See [Riot.js]() documentation for more detailes.
 
@@ -138,6 +139,52 @@ Now you can define your own dispatcher function to process all events.
     	}
     })
 ```
+
+
+# tsore object
+
+```tsore``` is the main object of the library. It plays the role of main dispatcher for the page.
+
+# Flux Pattern
+
+1. User creates and register the store
+```js
+    tsore.register('userStore',{
+        Login:function(auth) {
+            this.name = auth.name;
+            this.passord = auth.password;
+            tsore.trigger('change');
+        }
+    },{name:'',password:''});
+
+2. View calls for action
+```js
+    tsore.action('Login',{name:'Andrey',password:'123'});
+```
+
+3. Dispatcher calls all registred stores for the action 'login'.
+
+4. Store 'userStore' processes login in the Login action
+```js
+            this.name = auth.name;
+            this.passord = auth.password;
+```
+
+5. At the end Store emit 'change' event:
+```js
+             tsore.trigger('change');
+```
+
+6. This event will be catched by the view. It uodate fields and call 'update' event:
+```js
+    tsore.on('change', function(){
+        this.name = tsore.store('userStore').name;
+        this.password = ''; // Hide the password
+        this.update();
+    })
+```
+
+
 
 # Riot.js and Tsore.js
 
