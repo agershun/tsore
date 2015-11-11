@@ -6,6 +6,7 @@
 	    <script type="riot/tag">
 			<timer>
 				<div>{time} seconds</div>
+				<div style="color:red; font-size:12px">{state}</div>
 				<button onclick={action('Start')}>Start</button>
 				<button onclick={action('Stop')}>Stop</button>
 				<button onclick={action('Reset')}>Reset</button>
@@ -18,9 +19,12 @@
 				
 				this.attach('timer',function(store){
 					this.time = store.time;
+					this.state = store.state;
 				});
 
-				this.action('Start')();
+				this.on('mount', function(){
+					tsore.action('Start');
+				})
 			</timer>
 	    </script>
 		<script src="riot+compiler.js"></script>
@@ -33,6 +37,7 @@
 						tsore.trigger('change');
 					},
 					Start: function(){
+						this.state = 'Start';
 						if(this.intervalId) clearInterval(this.intervalId);
 						this.intervalId = setInterval(function(){
 							this.time++;
@@ -40,11 +45,14 @@
 						}.bind(this),1000);						
 					},
 					Stop: function(){
+						this.state = 'Stop';
 						if(this.intervalId) clearInterval(this.intervalId);
+						tsore.trigger('change');
 					}
 				},
 				{
-					time: 0
+					time: 0,
+					state: 'Init'
 				}
 			);
 	    	riot.mount('*');
