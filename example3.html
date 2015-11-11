@@ -1,0 +1,63 @@
+<html>
+	<body>
+		<h1>Timer Store Tsore.js Example</h1>
+	    <timer></timer>
+	    <p>Click on timer to reset</p>
+	    <script type="riot/tag">
+			<timer>
+				<div>{time} seconds</div>
+				<button onclick={start}>Start</button>
+				<button onclick={stop}>Stop</button>
+				<button onclick={reset}>Reset</button>
+				<style scoped>
+					:scope {
+						font-size:40px;
+					}
+				</style>
+				this.mixin('tsore');
+				
+				this.store('timer',function(store){
+					this.time = store.time;
+				});
+
+				start() {
+					tsore.action('Start');
+				}
+				stop() {
+					tsore.action('Stop');
+				};
+				reset() {
+					tsore.action('Reset');
+				};
+
+				tsore.action('Start');
+			</timer>
+	    </script>
+		<script src="riot+compiler.js"></script>
+	    <script src="tsore.js"></script>
+	    <script>
+			tsore.register('timer',
+				{
+					Reset: function(){
+						this.time = 0;
+						tsore.trigger('change');
+					},
+					Start: function(){
+						if(this.intervalId) clearInterval(this.intervalId);
+						this.intervalId = setInterval(function(){
+							this.time++;
+							tsore.trigger('change');
+						}.bind(this),1000);						
+					},
+					Stop: function(){
+						if(this.intervalId) clearInterval(this.intervalId);
+					}
+				},
+				{
+					time: 0
+				}
+			);
+	    	riot.mount('*');
+	    </script>
+	</body>
+</html>

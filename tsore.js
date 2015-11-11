@@ -194,14 +194,14 @@ Tsore.prototype.observable = function(el) {
         if (fn.busy) return
         fn.busy = 1
 
-        try {
+//        try {
           if(star) {
             starFn.forEach(function(sfn){
               sfn.apply(el, [name].concat(args));
             });
           }
           fn.apply(el, fn.typed ? [name].concat(args) : args);
-        } catch (e) { /* error */}
+//        } catch (e) { /* error */}
         if (fns[i] !== fn) { i-- }
         fn.busy = 0
       }
@@ -251,29 +251,31 @@ Tsore.prototype.Store = function(actions, defaults, controller){
 		if(actions.hasOwnProperty(f)) {
 //			self.on[f] = function(){
 //				var self2 = this;
-			self.on(f, function() {
 
-				var args = [].slice.call(arguments);
-				if(typeof controller != 'undefined') {
-//					console.log(226,f.append(args));
-					controller.apply(self,[f].concat(args));
-				}
-				var res = actions[f].call(self,args);
-				if(typeof res === 'string') {
-					tsore.trigger(res);
-				} else if(res === true) {
-					tsore.trigger('change');						
-				} else if(res instanceof Promise) {
-					res.then(function(data){
-						if(typeof res === 'string') {
-							tsore.trigger(res);
-						} else if(res === true) {
-							tsore.trigger('change');						
-						}
-					});
-				}
-			});
+      (function(actionsf, ff) {
+  			self.on(ff, function() {
 
+  				var args = [].slice.call(arguments);
+  				if(typeof controller != 'undefined') {
+  //					console.log(226,f.append(args));
+  					controller.apply(self,[ff].concat(args));
+  				}
+  				var res = actionsf.call(self,args);
+  				if(typeof res === 'string') {
+  					tsore.trigger(res);
+  				} else if(res === true) {
+  					tsore.trigger('change');						
+  				} else if(res instanceof Promise) {
+  					res.then(function(data){
+  						if(typeof res === 'string') {
+  							tsore.trigger(res);
+  						} else if(res === true) {
+  							tsore.trigger('change');						
+  						}
+  					});
+  				}
+  			});
+      })(actions[f],f);
 //			};
 		}
 	};

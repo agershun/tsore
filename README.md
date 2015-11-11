@@ -5,7 +5,14 @@ interface.
 
 The code is based on [Riot.js](riotjs.org), [Loot.js](https://gist.github.com/mattmccray/53fe18e5211334c9943d), and [RiotControl.js](https://github.com/jimsparkman/RiotControl) libraries.
 
-## Example
+## Examples
+
+Plese see the following examples:
+* [Example 1 - Traffic Light Example](example1.html)
+* [Example 2 - Manually defined dispatcher](example2.html)
+* [Example 3 - Timer Store](example3.html)
+* [Example in Browser](examples/ex1-browser.html)
+* [Example in Node.js](examples/ex1-node.js)
 
 
 ## Initializing
