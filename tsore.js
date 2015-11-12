@@ -219,8 +219,24 @@ Tsore.prototype.observable = function(el) {
     })
 
     return el
-  })
+  });
 
+
+/*
+defineProperty(this, 'mixin', function() {
+    each(arguments, function(mix) {
+      mix = typeof mix === T_STRING ? riot.mixin(mix) : mix
+      each(Object.keys(mix), function(key) {
+        // bind methods to self
+        if (key != 'init')
+          self[key] = isFunction(mix[key]) ? mix[key].bind(self) : mix[key]
+      })
+      // init method will be called automatically
+      if (mix.init) mix.init.bind(self)()
+    })
+    return this
+  });
+*/
   return el
 
 };

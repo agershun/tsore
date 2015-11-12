@@ -1,0 +1,77 @@
+# Tsore.js with client-server functionality
+
+
+
+tsore.register('name',storeParameters);
+
+Store parameters can include common, client, and server parts. They will be executed only on the part of client, server, or both.
+
+mixins: [],
+client: {
+	
+},
+server: {
+	
+}
+
+Also you can define with:
+
+if(tsore.isServer()) {
+	// Server definitions or actions
+} else {
+	// Client definitions or actions
+}
+
+Sever mode can be: 'server', 'client', or undefined (unclear).
+
+Tsore determine mode directly or it can be setup with tsore.express() (i.e. it is clear, that this is a server-side).
+
+Simple Syncing
+====
+Just add 'sync' mixin to the object.
+
+Socket messaging
+====
+To turn on websocket dispatching use tsore.socket() command.
+
+tsore.dispatch() will sent message to the server
+
+tsore.action('server:store.action');
+tsore.action('server:store.action');
+
+
+tsore.trigger('todo:change');
+
+tsore.on('push',function(a){
+	this.push(a);
+	tsore.trigger('client/change');
+});
+
+tsore.on('server:todo:change',function(){
+	this.fetch();
+	tsore.trigger('change');
+});
+
+tsore.on('client/todo:change',function(){
+	this.save();
+});
+
+Collision detections
+========
+saveFetchAll(); - save and fetch in one request;
+client - client priority
+server - server priority
+stall - collision detection (keep last version of data we work with) : originator:number - everychange we increase the number
+if number is different we can reload data or overwrite them to the server or merge or do the transactions (???)
+
+store.footprint++; if received footprint <> our footprint: reload/save
+
+
+
+
+transactions - 
+
+
+
+
+

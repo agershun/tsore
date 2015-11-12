@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Riot.js + Tsore.js ToDo Simple Client-Server Demo</title>
+	</head>
+	<body>
+		<h1>Riot.js + Tsore.js ToDo Client-Server Demo</h1>
+		<p>
+			To run this example please run server side with 'node server' command and 
+			open some browser clients at 'http://localhost:3000' address.
+		</p>
+
+		<!-- Main page -->
+		<todo-counter></todo-counter>
+		<todos></todos>
+
+		<!-- Riot tags-->
+		<script type="riot/tag">
+			<todo-counter>
+				<p>{num} todos in the list</p>
+
+				this.mixin('tsore');
+
+				this.subscribe('todos',function(todos){
+					this.num = todos.length;
+				});
+			</todo-counter>
+
+			<todos>
+				<input name="inputtodo" placeholder="Add new todo here..."></input>
+				<button onclick="action('todos:add',{name:this.inputtodo.value})">Add new todo</button>
+				<button onclick="action('todos:remove')">Remove last todo</button>
+				<ul>
+					<li each={todo, idx in todos} click={done}>
+						<input type="checkbox" value={done} onclick = "tsore.action('todos:done',i)"/>
+						<span style="text-decoration:{line-through:done}">{name}</span>
+					</li>
+				</ul>
+
+				this.mixin('tsore');
+
+				this.subscribe('todos',function(todos){
+					this.todos = todos.slice();
+				});
+
+			</todos>
+		</script>
+
+		<!-- include libraries -->
+		<script scr="riot+compile.js"></script>
+		<script scr="tsore.js"></script>
+
+		<!-- Add the store -->
+		<script scr="todostore.js"></script>
+		<script>
+			tsore.socket();
+			riot.mount('*');
+		</script>
+	</body>
+</html>
+
