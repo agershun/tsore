@@ -9,30 +9,25 @@
 	    <script type="riot/tag">
 
 			<timer>
-				<div>Timer1: {time1} Timer2: {time2}</div>
+				<div style="font-size:40px">Timer1: {time1} Timer2: {time2}</div>
 
-				<button onclick={action('Start')}>Start</button>
-				<button onclick={action('Stop')}>Stop</button>
-				<button onclick={action('Reset')}>Reset</button>
-				<button onclick={action('MinusFive')}>Minus 5 from Timer1</button>
-				<button onclick={action('AddTen')}>Add 10 to Timer2</button>
+				<button onclick="tsore.dispatch('Start')">Start</button>
+				<button onclick="tsore.dispatch('Stop')">Stop</button>
+				<button onclick="tsore.dispatch('Reset')">Reset</button>
+				<button onclick="tsore.dispatch('MinusFive')">Minus 5 from Timer1</button>
+				<button onclick="tsore.dispatch('AddTen')">Add 10 to Timer2</button>
 				
-				<style scoped>
-					:scope {
-						font-size:40px;
-					}
-				</style>
 				this.mixin('tsore'); // Attach Tsore functions
 				
-				this.attach('timer1',function(store){  // Attach store with update function
+				this.subscribe('timer1',function(store){  // Attach store with update function
 					this.time1 = store.time;
 				});
 
-				this.attach('timer2',function(store){
+				this.subscribe('timer2',function(store){
 					this.time2 = store.time;
 				});
 
-				tsore.action('Start');  // Runaction
+				tsore.dispatch('Start');  // Runaction
 			</timer>
 	    </script>
 		<script src="riot+compiler.js"></script>
@@ -58,12 +53,12 @@
 			};
 
 
-			tsore.register('timer1',new tsore.Store(TimerActions,{time:10}))
+			tsore.register('timer1',new tsore.Store({actions:TimerActions,defaults:{time:10}}))
 			.on('MinusFive',function(){
 				this.time-=5;
 			});
 
-			tsore.register('timer2',new tsore.Store(TimerActions,{time:20}))
+			tsore.register('timer2',new tsore.Store({actions:TimerActions,defaults:{time:10}}))
 			.on('AddTen',function(){
 				this.time+=10;
 			})

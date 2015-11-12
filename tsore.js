@@ -310,7 +310,7 @@ if(typeof riot !== 'undefined') {
 	      })
 	    },	
 
-      attach: function(event,store,fn) {
+      subscribe: function(event,store,fn) {
         if(arguments.length == 2) {
           fn = store;
           store = event;
@@ -327,11 +327,11 @@ if(typeof riot !== 'undefined') {
 
 
       },	
-    action: function(action){
-      return function(){
-        tsore.action(action);
-      }
-    },
+//    action: function(action){
+//      return function(){
+//        tsore.action(action);
+//      }
+//    },
 
     // Not clear how to use
 		store1: function(name,readOnly){
